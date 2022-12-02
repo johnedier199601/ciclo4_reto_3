@@ -1,3 +1,4 @@
+import 'package:aplicacion_de_chat/Proceso/Autenticacion.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -19,14 +20,39 @@ class _mesajesState extends State<mesajes> {
     return StreamBuilder(
         stream: respuesta_consulta,
         builder: (context, AsyncSnapshot<QuerySnapshot> respuesta) {
-          return ListView.builder(
-            itemCount: respuesta.data!.docs.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text(respuesta.data!.docs[index].get("mesaje")),
-              );
-            },
-          );
+          return respuesta.data?.docs.isEmpty == false
+              ? ListView.builder(
+                  itemCount: respuesta.data!.docs.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      color: (Autenticacion().usuarios?.email).toString() ==
+                              respuesta.data!.docs[index].get("email")
+                          ? Colors.green[100]
+                          : Colors.white,
+                      child: ListTile(
+                        title: Text(
+                          respuesta.data!.docs[index].get("mesaje"),
+                          textAlign:
+                              (Autenticacion().usuarios?.email).toString() ==
+                                      respuesta.data!.docs[index].get("email")
+                                  ? TextAlign.right
+                                  : TextAlign.left,
+                        ),
+                        subtitle: Text(
+                          respuesta.data!.docs[index].get("email"),
+                          textAlign:
+                              (Autenticacion().usuarios?.email).toString() ==
+                                      respuesta.data!.docs[index].get("email")
+                                  ? TextAlign.right
+                                  : TextAlign.left,
+                        ),
+                      ),
+                    );
+                  },
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
+                );
         });
   }
 }
