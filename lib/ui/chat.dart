@@ -12,6 +12,7 @@ class chat extends StatefulWidget {
 
 final mensaje = TextEditingController();
 final fire = FirebaseFirestore.instance;
+final foco = FocusNode();
 
 class _chatState extends State<chat> {
   @override
@@ -40,8 +41,22 @@ class _chatState extends State<chat> {
               children: [
                 Expanded(
                   child: TextField(
+                    focusNode: foco,
                     controller: mensaje,
                     decoration: InputDecoration(hintText: "Mensaje..."),
+                    onSubmitted: (valor) {
+                      foco.requestFocus();
+                      if (mensaje.text.isNotEmpty) {
+                        mensaje.text = valor;
+                        fire.collection("Chat").doc().set({
+                          "mesaje": mensaje.text,
+                          "tiempo": DateTime.now(),
+                          "email": Autenticacion().usuarios?.email
+                        });
+
+                        mensaje.clear();
+                      }
+                    },
                   ),
                 ),
                 IconButton(
